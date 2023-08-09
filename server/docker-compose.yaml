@@ -1,11 +1,19 @@
-version: '3.7'
+version: '3.8'
+
 services:
-  postgres:
-    image: postgres:latest
-    container_name: social_media_db
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_sm_db
     environment:
-      POSTGRES_USER: isot
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: social_media
+      MYSQL_ROOT_PASSWORD: qwerty
+      MYSQL_DATABASE: social_media
+      MYSQL_USER: ihsan
+      MYSQL_PASSWORD: qwerty
     ports:
-      - '5432:5432'
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql_data:
