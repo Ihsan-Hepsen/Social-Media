@@ -1,13 +1,17 @@
-import express, { Express, Request, Response } from 'express'
+import express, { Request, Response } from 'express'
+import bodyParser from 'body-parser' // Middleware for parsing JSON request bodies
+import userRoutes from './routes/userRoutes' // Import your user routes
 
-const app: Express = express()
-const port: number = 8080
+const app = express()
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello there')
-    console.log('Home page reload')
-})
+// Middleware
+app.use(bodyParser.json())
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`)
+// Routes
+app.use('/users', userRoutes) // Mount the user routes under the /users endpoint
+
+// Start the server
+const PORT = 8080
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`)
 })

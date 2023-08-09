@@ -1,0 +1,11 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: social_media_db
+    environment:
+      POSTGRES_USER: isot
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: social_media
+    ports:
+      - '5432:5432'
