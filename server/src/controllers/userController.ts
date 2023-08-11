@@ -2,12 +2,13 @@ import { Request, Response } from 'express'
 import UserRepository from '../repositories/userRepository'
 import User from '../models/user'
 import Joi from 'joi'
+import userRepository from '../repositories/userRepository'
 
 class UserController {
 
     async getAllUsers(req: Request, res: Response): Promise<void> {
         try {
-            let users: User[] = await UserRepository.getAllUsers()
+            let users = await UserRepository.getAllUsers()
             res.json(users)
         } catch (error) {
             console.error('Error fetching users:', error)
@@ -35,8 +36,13 @@ class UserController {
         console.log(`Received PUT request for user #${req.params.id}`)
         try {
             const userId = parseInt(req.params.id, 10)
+            if (userId !== req.body.id) {
+                res.sendStatus(409).json({ error: 'Conflicting ID found for the user' })
+                return
+            }
 
             const userSchema = Joi.object({
+                id: Joi.number().required(),
                 firstName: Joi.string().required(),
                 lastName: Joi.string().required(),
                 email: Joi.string().required(),
@@ -64,6 +70,15 @@ class UserController {
             console.error('Error delete user by id:', error)
             res.status(500).json({ error: 'Internal server error' })
         }
+    }
+
+    // TODO: Write Create User
+    async createUser(req: Request, res: Response): Promise<void> {
+        // validate body: return 400 if invalid
+
+        // pass the User obj to repo.createUser()
+        await UserRepository.createUser(req.body)
+        // return 201 if successful
     }
 
     async deleteUser(req: Request, res: Response): Promise<void> {

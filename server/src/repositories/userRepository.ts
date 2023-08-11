@@ -4,12 +4,13 @@ import pool from './db'
 import { number } from 'joi'
 
 class UserRepository {
-    async getAllUsers(): Promise<User[]> {
+    async getAllUsers(): Promise<User[] | null> {
         try {
             const [rows, fields] = await pool.execute('SELECT * FROM users') as [User[], any[]]
             return rows
         } catch (error) {
-            throw error
+            console.error(`Error while fetching user: ${error}`)
+            return null
         }
     }
 
@@ -18,8 +19,14 @@ class UserRepository {
             const [rows, fields] = await pool.execute('SELECT * FROM users WHERE id = ?', [id]) as [User[], any[]]
             return rows[0] || null
         } catch (error) {
-            throw error
+            console.error(`Error while fetching user: ${error}`)
+            return null
         }
+    }
+
+    // TODO: Complete Create User
+    async createUser(user: User): Promise<void> {
+        return
     }
 
     async updateUser(id: number, updatedUser: User): Promise<User | null> {
@@ -50,12 +57,13 @@ class UserRepository {
             return oldUser
 
         } catch (error) {
-            throw error
+            console.error(`Error while updating user: ${error}`)
+            return null
         }
     }
 
 
-    async deleteUser(id: number): Promise<User> {
+    async deleteUser(id: number): Promise<User | null> {
         try {
             const [rows, fields] = await pool.execute('SELECT * FROM users WHERE id = ?', [id]) as [User[], any[]]
             const user = rows[0]
@@ -65,7 +73,8 @@ class UserRepository {
             await pool.execute('DELETE FROM users WHERE id = ?', [id])
             return user
         } catch (error) {
-            throw error
+            console.error(`Error while deleting user: ${error}`)
+            return null
         }
     }
 }
