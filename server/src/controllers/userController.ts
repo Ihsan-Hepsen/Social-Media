@@ -3,6 +3,7 @@ import UserRepository from '../repositories/userRepository'
 import User from '../models/user'
 import Joi from 'joi'
 import userRepository from '../repositories/userRepository'
+import { log } from 'console'
 
 class UserController {
 
@@ -72,13 +73,36 @@ class UserController {
         }
     }
 
-    // TODO: Write Create User
     async createUser(req: Request, res: Response): Promise<void> {
-        // validate body: return 400 if invalid
+        console.log(`Recceived POST request to create a new user`)
+        try {
+            const userSchema = Joi.object({
+                firstName: Joi.string().required(),
+                lastName: Joi.string().required(),
+                email: Joi.string().required(),
+                password: Joi.string().required(),
+            })
 
-        // pass the User obj to repo.createUser()
-        await UserRepository.createUser(req.body)
-        // return 201 if successful
+            const { error, value: user } = userSchema.validate(req.body)
+            if (error) {
+                console.error(`Error on request body: ${error}`)
+                res.status(400).json({ error: error.details.map(detail => detail.message) })
+                return
+            }
+
+            // pass the User obj to repo.createUser()
+            const createdUser: User | null = await UserRepository.createUser(user)
+            if (createdUser) {
+                console.log('User created successfully')
+                res.sendStatus(201)
+            } else {
+                console.log('Failed to create user')
+                res.status(400).json({ error: `Cannot create new user` })
+            }
+        } catch (error) {
+            console.error('Server error while creating user')
+            res.status(500).json({ error: 'Internal server error' })
+        }
     }
 
     async deleteUser(req: Request, res: Response): Promise<void> {

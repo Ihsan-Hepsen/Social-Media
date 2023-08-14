@@ -2,6 +2,7 @@ import e from 'express'
 import User from '../models/user'
 import pool from './db'
 import { number } from 'joi'
+import { log } from 'console'
 
 class UserRepository {
     async getAllUsers(): Promise<User[] | null> {
@@ -25,8 +26,34 @@ class UserRepository {
     }
 
     // TODO: Complete Create User
-    async createUser(user: User): Promise<void> {
-        return
+    async createUser(user: User): Promise<User | any | null> {
+        try {
+            const createUserQuery = `
+            INSERT INTO users (firstName, lastName, email, password, created_at)
+            VALUES (?, ?, ?, ?, NOW());
+            `
+            await pool.execute(createUserQuery, [
+                user.firstName,
+                user.lastName,
+                user.email,
+                user.password,
+            ])
+
+            const selectUserQuery = 'SELECT * FROM users WHERE email = ?'
+            const [rows] = await pool.execute(selectUserQuery, [user.email]) as [User[], any[]]
+
+            if (rows) {
+                console.log('User created successfully')
+                return rows[0]
+            } else {
+                console.error('Failed to create user')
+                throw new Error('Failed to create user')
+            }
+
+        } catch (error) {
+            console.error(`Error while creating user: ${error}`)
+            throw new Error(`Failed to creating user: ${error}`)
+        }
     }
 
     async updateUser(id: number, updatedUser: User): Promise<User | null> {
