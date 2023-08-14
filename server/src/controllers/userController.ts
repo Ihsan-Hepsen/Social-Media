@@ -24,7 +24,7 @@ class UserController {
             if (user) {
                 res.json(user)
             } else {
-                res.sendStatus(404).json({ error: 'User not found' })
+                res.status(404).json({ error: 'User not found' })
             }
         } catch (error) {
             console.error('Error fetching user by id:', error)
@@ -37,7 +37,7 @@ class UserController {
         try {
             const userId = parseInt(req.params.id, 10)
             if (userId !== req.body.id) {
-                res.sendStatus(409).json({ error: 'Conflicting ID found for the user' })
+                res.status(409).json({ error: 'User ID mismatch on request body' })
                 return
             }
 
@@ -62,12 +62,12 @@ class UserController {
             if (user) {
                 res.json(user)
             } else if (!user) {
-                res.sendStatus(404).json({ error: 'User not found' })
+                res.status(404).json({ error: 'User not found' })
             } else {
                 res.sendStatus(400)
             }
         } catch (error) {
-            console.error('Error delete user by id:', error)
+            console.error('Error update user by id:', error)
             res.status(500).json({ error: 'Internal server error' })
         }
     }
@@ -90,7 +90,7 @@ class UserController {
             if (user) {
                 res.json(user)
             } else {
-                res.sendStatus(404).json({ error: 'User not found' })
+                res.status(404).json({ error: 'User not found' })
             }
         } catch (error) {
             console.error('Error delete user by id:', error)

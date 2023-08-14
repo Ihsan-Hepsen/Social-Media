@@ -9,7 +9,7 @@ class UserRepository {
             const [rows, fields] = await pool.execute('SELECT * FROM users') as [User[], any[]]
             return rows
         } catch (error) {
-            console.error(`Error while fetching user: ${error}`)
+            console.error(`Error while fetching users: ${error}`)
             return null
         }
     }
@@ -35,7 +35,7 @@ class UserRepository {
             const oldUser = rows[0]
 
             if (!oldUser) {
-                return null
+                throw new Error(`User with #${id} does not exist.`)
             }
 
             const updateQuery = `
@@ -58,7 +58,7 @@ class UserRepository {
 
         } catch (error) {
             console.error(`Error while updating user: ${error}`)
-            return null
+            throw new Error(`Failed to update user with ID ${id}: ${error}`)
         }
     }
 
